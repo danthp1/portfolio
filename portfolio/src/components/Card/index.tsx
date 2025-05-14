@@ -16,12 +16,13 @@ export const Card: React.FC<{
   alignItems?: 'center'
   className?: string
   doc?: CardPostData
-  relationTo?: 'posts' | 'art' | 'scientific-works'
+  relationTo?: 'posts' | 'art' | 'scientific-works' | 'pages' | 'resume' | 'media' | 'categories'
   showCategories?: boolean
+  showSource?: boolean
   title?: string
 }> = (props) => {
   const { card, link } = useClickableCard({})
-  const { className, doc, relationTo, showCategories, title: titleFromProps } = props
+  const { className, doc, relationTo, showCategories, showSource = false, title: titleFromProps } = props
 
   const { slug, categories, meta, title } = doc || {}
   const { description, image: metaImage } = meta || {}
@@ -44,6 +45,11 @@ export const Card: React.FC<{
         {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="33vw" />}
       </div>
       <div className="p-4">
+        {showSource && relationTo && (
+          <div className="uppercase text-sm mb-2 text-muted-foreground">
+            {relationTo.replace('-', ' ')}
+          </div>
+        )}
         {showCategories && hasCategories && (
           <div className="uppercase text-sm mb-4">
             {showCategories && hasCategories && (

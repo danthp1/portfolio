@@ -819,7 +819,16 @@ export interface Art {
     [k: string]: unknown;
   };
   layout?:
-    | (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock | GalleryBlock | AudioPlayerBlock)[]
+    | (
+        | CallToActionBlock
+        | ContentBlock
+        | MediaBlock
+        | ArchiveBlock
+        | FormBlock
+        | GalleryBlock
+        | AudioPlayerBlock
+        | EmbedBlock
+      )[]
     | null;
   meta?: {
     title?: string | null;
@@ -839,6 +848,39 @@ export interface Art {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EmbedBlock".
+ */
+export interface EmbedBlock {
+  /**
+   * Select the type of content to embed
+   */
+  embedType: 'youtube' | 'figma' | 'custom';
+  /**
+   * The YouTube video ID (e.g., dQw4w9WgXcQ from https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+   */
+  youtubeID?: string | null;
+  /**
+   * The full Figma embed URL (e.g., https://www.figma.com/embed?...)
+   */
+  figmaURL?: string | null;
+  /**
+   * Paste the full embed code here
+   */
+  customEmbed?: string | null;
+  /**
+   * Select the aspect ratio for the embedded content
+   */
+  aspectRatio?: ('16:9' | '4:3' | '1:1' | 'custom') | null;
+  /**
+   * Custom height in pixels
+   */
+  customHeight?: number | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'embed';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -983,10 +1025,35 @@ export interface Search {
   id: number;
   title?: string | null;
   priority?: number | null;
-  doc: {
-    relationTo: 'posts';
-    value: number | Post;
-  };
+  doc:
+    | {
+        relationTo: 'posts';
+        value: number | Post;
+      }
+    | {
+        relationTo: 'pages';
+        value: number | Page;
+      }
+    | {
+        relationTo: 'art';
+        value: number | Art;
+      }
+    | {
+        relationTo: 'scientific-works';
+        value: number | ScientificWork;
+      }
+    | {
+        relationTo: 'resume';
+        value: number | Resume;
+      }
+    | {
+        relationTo: 'media';
+        value: number | Media;
+      }
+    | {
+        relationTo: 'categories';
+        value: number | Category;
+      };
   slug?: string | null;
   meta?: {
     title?: string | null;
@@ -1408,6 +1475,7 @@ export interface ArtSelect<T extends boolean = true> {
         formBlock?: T | FormBlockSelect<T>;
         gallery?: T | GalleryBlockSelect<T>;
         audioPlayer?: T | AudioPlayerBlockSelect<T>;
+        embed?: T | EmbedBlockSelect<T>;
       };
   meta?:
     | T
@@ -1423,6 +1491,20 @@ export interface ArtSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EmbedBlock_select".
+ */
+export interface EmbedBlockSelect<T extends boolean = true> {
+  embedType?: T;
+  youtubeID?: T;
+  figmaURL?: T;
+  customEmbed?: T;
+  aspectRatio?: T;
+  customHeight?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

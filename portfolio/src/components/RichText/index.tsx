@@ -12,11 +12,17 @@ import {
 } from '@payloadcms/richtext-lexical/react'
 
 import { CodeBlock, CodeBlockProps } from '@/blocks/Code/Component'
+import { GalleryBlock } from '@/blocks/Gallery/Component'
+import { AudioPlayerBlock } from '@/blocks/AudioPlayer/Component'
+import { EmbedBlock } from '@/blocks/Embed/Component'
 
 import type {
   BannerBlock as BannerBlockProps,
   CallToActionBlock as CTABlockProps,
   MediaBlock as MediaBlockProps,
+  GalleryBlock as GalleryBlockProps,
+  AudioPlayerBlock as AudioPlayerBlockProps,
+  EmbedBlock as EmbedBlockProps,
 } from '@/payload-types'
 import { BannerBlock } from '@/blocks/Banner/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
@@ -24,7 +30,15 @@ import { cn } from '@/utilities/ui'
 
 type NodeTypes =
   | DefaultNodeTypes
-  | SerializedBlockNode<CTABlockProps | MediaBlockProps | BannerBlockProps | CodeBlockProps>
+  | SerializedBlockNode<
+      CTABlockProps |
+      MediaBlockProps |
+      BannerBlockProps |
+      CodeBlockProps |
+      GalleryBlockProps |
+      AudioPlayerBlockProps |
+      EmbedBlockProps
+    >
 
 const internalDocToHref = ({ linkNode }: { linkNode: SerializedLinkNode }) => {
   const { value, relationTo } = linkNode.fields.doc!
@@ -52,6 +66,9 @@ const jsxConverters: JSXConvertersFunction<NodeTypes> = ({ defaultConverters }) 
     ),
     code: ({ node }) => <CodeBlock className="col-start-2" {...node.fields} />,
     cta: ({ node }) => <CallToActionBlock {...node.fields} />,
+    gallery: ({ node }) => <GalleryBlock className="col-start-1 col-span-3" {...node.fields} />,
+    audioPlayer: ({ node }) => <AudioPlayerBlock className="col-start-2" {...node.fields} />,
+    embed: ({ node }) => <EmbedBlock className="col-start-1 col-span-3" {...node.fields} />,
   },
 })
 
@@ -71,7 +88,7 @@ export default function RichText(props: Props) {
         {
           container: enableGutter,
           'max-w-none': !enableGutter,
-          'mx-auto prose md:prose-md dark:prose-invert': enableProse,
+          'mx-auto prose md:prose-md text-black': enableProse,
         },
         className,
       )}

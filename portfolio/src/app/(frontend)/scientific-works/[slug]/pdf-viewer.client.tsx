@@ -1,92 +1,55 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
-import 'react-pdf/dist/esm/Page/TextLayer.css';
+import { ExternalLink } from 'lucide-react';
 
-// Set up the worker for react-pdf
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.js`;
-
-interface PDFViewerClientProps {
+interface PDFViewerProps {
   pdfUrl: string;
+  className?: string;
 }
 
-const PDFViewerClient: React.FC<PDFViewerClientProps> = ({ pdfUrl }) => {
-  const [numPages, setNumPages] = useState<number | null>(null);
-  const [pageNumber, setPageNumber] = useState<number>(1);
+const PDFViewer: React.FC<PDFViewerProps> = ({ pdfUrl, className = '' }) => {
+  const [embedFailed, setEmbedFailed] = useState(false);
 
+  // Check if embed is supported
   useEffect(() => {
-    // Log the PDF URL for debugging
-    console.log('PDF URL in PDFViewerClient:', pdfUrl);
-  }, [pdfUrl]);
+    // Modern browsers support PDF embedding, but we'll keep this check for older browsers
+    const isEmbedSupported = navigator &&
+      navigator.mimeTypes &&
+      navigator.mimeTypes['application/pdf'];
 
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setNumPages(numPages);
-    setPageNumber(1);
-  }
-
-  function changePage(offset: number) {
-    setPageNumber(prevPageNumber => Math.min(Math.max(prevPageNumber + offset, 1), numPages || 1));
-  }
-
-  function previousPage() {
-    changePage(-1);
-  }
-
-  function nextPage() {
-    changePage(1);
-  }
+    setEmbedFailed(!isEmbedSupported);
+  }, []);
 
   return (
-    <div className="pdf-viewer-wrapper">
-      <Document
-        file={pdfUrl}
-        onLoadSuccess={onDocumentLoadSuccess}
-        onLoadError={(error) => console.error('Error loading PDF:', error)}
-        className="flex flex-col items-center"
+    <div className={`pdf-viewer relative ${className}`} style={{ width: '100%', height: '800px', minHeight: '800px' }}>
+      {/* Extend button */}
+      <a
+        href={pdfUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute top-2 right-2 z-10 bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-md flex items-center gap-1 transition-colors"
+        title="PDF in neuem Tab öffnen"
       >
-        <Page
-          pageNumber={pageNumber}
-          width={600}
-          renderTextLayer={true}
-          renderAnnotationLayer={true}
-          className="border border-gray-200 shadow-md"
-        />
-      </Document>
+        <ExternalLink size={16} />
+        <span>Erweitern</span>
+      </a>
 
-      {numPages && (
-        <div className="flex justify-between items-center mt-4 px-4">
-          <button
-            onClick={previousPage}
-            disabled={pageNumber <= 1}
-            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            Vorherige
-          </button>
-
-          <p className="text-center">
-            Seite {pageNumber} von {numPages}
-          </p>
-
-          <button
-            onClick={nextPage}
-            disabled={pageNumber >= numPages}
-            className="px-4 py-2 bg-blue-500 text-white rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            Nächste
-          </button>
-        </div>
+      <embed
+        src={pdfUrl}
+        type="application/pdf"
+        width="100%"
+        height="100%"
+        onError={() => setEmbedFailed(true)}
+      />
+      {/* Fallback link only shown when embed fails */}
+      {embedFailed && (
+        <p className="text-center mt-2">
+          Ihr Browser unterstützt keine PDF-Einbettung. <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">PDF herunterladen</a>
+        </p>
       )}
-
-      {/* Fallback link */}
-      <p className="text-center mt-4">
-        <a href={pdfUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-          PDF herunterladen
-        </a>
-      </p>
     </div>
   );
 };
 
-export default PDFViewerClient;
+export default PDFViewer;
