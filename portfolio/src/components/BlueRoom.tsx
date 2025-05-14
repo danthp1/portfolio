@@ -226,7 +226,19 @@ const ArtDisplay = ({ position, rotation, artData = null, scale = [3, 2, 0.1] })
   }
 
   // Load art texture if available
-  const artTextureUrl = artData?.image?.url;
+  const artTextureUrl = artData?.image?.url;ordne dne Ferqwuelgyn specturm auch umn einen keugel an udn wo auf jedem radius dide reqeuncy gespielt wird
+
+
+  Die waveform soll einen 3d landscpae werden die auf die waverform reagierunft und ishc egpanded
+
+  de rparticval voll sopll häghere recativität haben udn sicgh weitter vom zenter enfenrne können jed nach dem wie die frewquenrcyz etc ist
+
+
+
+  ebenfalls entferne geermottic plus e und füge heirzu eune neue visulaisuierung hinzu
+
+
+  zusätzlich funtktioniert immer noch cnith
   let texture = null;
   try {
     // Only try to load art texture if URL exists
