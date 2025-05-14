@@ -387,13 +387,24 @@ export class WebGLVisualizationEngine {
 
     gl.uniformMatrix4fv(info.uniformLocations.projectionMatrix, false, projection)
     gl.uniformMatrix4fv(info.uniformLocations.modelViewMatrix, false, modelView)
-    info.uniformLocations.time && gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
-    info.uniformLocations.resolution &&
+    if (info.uniformLocations.time) {
+      gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
+    }
+    if (info.uniformLocations.resolution) {
       gl.uniform2f(info.uniformLocations.resolution, this.canvas.width, this.canvas.height)
-    info.uniformLocations.intensity && gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
-    info.uniformLocations.colorShift && gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
-    info.uniformLocations.complexity && gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
-    info.uniformLocations.rotation && gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
+    if (info.uniformLocations.intensity) {
+      gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
+    }
+    if (info.uniformLocations.colorShift) {
+      gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
+    }
+    if (info.uniformLocations.complexity) {
+      gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
+    }
+    if (info.uniformLocations.rotation) {
+      gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
 
     if (info.uniformLocations.audioDataTexture && this.audioDataTexture) {
       gl.activeTexture(gl.TEXTURE0)
@@ -429,13 +440,24 @@ export class WebGLVisualizationEngine {
 
     gl.uniformMatrix4fv(info.uniformLocations.projectionMatrix, false, projection)
     gl.uniformMatrix4fv(info.uniformLocations.modelViewMatrix, false, modelView)
-    info.uniformLocations.time && gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
-    info.uniformLocations.resolution &&
+    if (info.uniformLocations.time) {
+      gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
+    }
+    if (info.uniformLocations.resolution) {
       gl.uniform2f(info.uniformLocations.resolution, this.canvas.width, this.canvas.height)
-    info.uniformLocations.intensity && gl.uniform1f(info.uniformLocations.intensity, this.params.intensity * 1.5) // Increase intensity
-    info.uniformLocations.colorShift && gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
-    info.uniformLocations.complexity && gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
-    info.uniformLocations.rotation && gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
+    if (info.uniformLocations.intensity) {
+      gl.uniform1f(info.uniformLocations.intensity, this.params.intensity * 1.5) // Increase intensity
+    }
+    if (info.uniformLocations.colorShift) {
+      gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
+    }
+    if (info.uniformLocations.complexity) {
+      gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
+    }
+    if (info.uniformLocations.rotation) {
+      gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
 
     if (info.uniformLocations.audioDataTexture && this.audioDataTexture) {
       gl.activeTexture(gl.TEXTURE0)
@@ -480,13 +502,24 @@ export class WebGLVisualizationEngine {
 
     gl.uniformMatrix4fv(info.uniformLocations.projectionMatrix, false, projection)
     gl.uniformMatrix4fv(info.uniformLocations.modelViewMatrix, false, modelView)
-    info.uniformLocations.time && gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
-    info.uniformLocations.resolution &&
+    if (info.uniformLocations.time) {
+      gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
+    }
+    if (info.uniformLocations.resolution) {
       gl.uniform2f(info.uniformLocations.resolution, this.canvas.width, this.canvas.height)
-    info.uniformLocations.intensity && gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
-    info.uniformLocations.colorShift && gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
-    info.uniformLocations.complexity && gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
-    info.uniformLocations.rotation && gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
+    if (info.uniformLocations.intensity) {
+      gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
+    }
+    if (info.uniformLocations.colorShift) {
+      gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
+    }
+    if (info.uniformLocations.complexity) {
+      gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
+    }
+    if (info.uniformLocations.rotation) {
+      gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
 
     if (info.uniformLocations.audioDataTexture && this.audioDataTexture) {
       gl.activeTexture(gl.TEXTURE0)
@@ -513,13 +546,24 @@ export class WebGLVisualizationEngine {
       gl.enableVertexAttribArray(info.attribLocations.textureCoord!)
     }
 
-    info.uniformLocations.time && gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
-    info.uniformLocations.resolution &&
+    if (info.uniformLocations.time) {
+      gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
+    }
+    if (info.uniformLocations.resolution) {
       gl.uniform2f(info.uniformLocations.resolution, this.canvas.width, this.canvas.height)
-    info.uniformLocations.intensity && gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
-    info.uniformLocations.colorShift && gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
-    info.uniformLocations.complexity && gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
-    info.uniformLocations.rotation && gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
+    if (info.uniformLocations.intensity) {
+      gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
+    }
+    if (info.uniformLocations.colorShift) {
+      gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
+    }
+    if (info.uniformLocations.complexity) {
+      gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
+    }
+    if (info.uniformLocations.rotation) {
+      gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
 
     if (info.uniformLocations.audioDataTexture && this.audioDataTexture) {
       gl.activeTexture(gl.TEXTURE0)
@@ -790,13 +834,24 @@ export class WebGLVisualizationEngine {
       gl.enableVertexAttribArray(info.attribLocations.textureCoord!)
     }
 
-    info.uniformLocations.time && gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
-    info.uniformLocations.resolution &&
+    if (info.uniformLocations.time) {
+      gl.uniform1f(info.uniformLocations.time, currentTime * 0.001)
+    }
+    if (info.uniformLocations.resolution) {
       gl.uniform2f(info.uniformLocations.resolution, this.canvas.width, this.canvas.height)
-    info.uniformLocations.intensity && gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
-    info.uniformLocations.colorShift && gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
-    info.uniformLocations.complexity && gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
-    info.uniformLocations.rotation && gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
+    if (info.uniformLocations.intensity) {
+      gl.uniform1f(info.uniformLocations.intensity, this.params.intensity)
+    }
+    if (info.uniformLocations.colorShift) {
+      gl.uniform1f(info.uniformLocations.colorShift, this.params.colorShift)
+    }
+    if (info.uniformLocations.complexity) {
+      gl.uniform1f(info.uniformLocations.complexity, this.params.complexity)
+    }
+    if (info.uniformLocations.rotation) {
+      gl.uniform1f(info.uniformLocations.rotation, this.params.rotation)
+    }
 
     if (info.uniformLocations.audioDataTexture && this.audioDataTexture) {
       gl.activeTexture(gl.TEXTURE0)
@@ -1550,7 +1605,7 @@ uniform vec2 uResolution;
 uniform sampler2D uAudioDataTexture;
 
 // Noise functions from https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
-float rand(vec2 n) { 
+float rand(vec2 n) {
   return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
 }
 
@@ -1602,9 +1657,9 @@ vec3 nebula(vec2 uv, float time, float intensity) {
   float noise3 = fbm(p * 4.0 + time * 0.2);
 
   // Combine noise layers with audio reactivity
-  float combinedNoise = 
-    noise1 * (0.6 + lowFreq * 0.4) + 
-    noise2 * (0.3 + midFreq * 0.7) + 
+  float combinedNoise =
+    noise1 * (0.6 + lowFreq * 0.4) +
+    noise2 * (0.3 + midFreq * 0.7) +
     noise3 * (0.2 + highFreq * 0.8);
 
   // Create color based on noise and audio

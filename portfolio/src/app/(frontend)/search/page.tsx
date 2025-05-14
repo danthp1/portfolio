@@ -98,7 +98,7 @@ export default async function Page({ searchParams: searchParamsPromise }: Args) 
             return (
               <div key={collectionType} className="mb-12">
                 <h2 className="container mb-6 capitalize">{collectionType.replace('-', ' ')}</h2>
-                <CollectionArchive posts={collectionResults as CardPostData[]} relationTo={collectionType as any} showSource={true} />
+                <CollectionArchive posts={collectionResults as CardPostData[]} relationTo={collectionType as 'posts' | 'art' | 'scientific-works' | 'pages' | 'resume' | 'media' | 'categories'} showSource={true} />
               </div>
             );
           })}

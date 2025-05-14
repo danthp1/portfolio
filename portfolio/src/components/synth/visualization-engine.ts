@@ -106,7 +106,7 @@ export class VisualizationEngine {
   private draw = () => {
     const { canvas, ctx, analyser } = this
     const currentTime = performance.now()
-    const deltaTime = (currentTime - this.lastFrameTime) / 1000 // in seconds
+    const _deltaTime = (currentTime - this.lastFrameTime) / 1000 // in seconds
     this.lastFrameTime = currentTime
 
     // Get frequency and time domain data

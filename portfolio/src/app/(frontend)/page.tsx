@@ -1,9 +1,8 @@
 "use client"
 import { motion } from "framer-motion"
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { ScrollControls, Scroll, PerspectiveCamera, Effects, useProgress } from '@react-three/drei'
+import { ScrollControls, Scroll, PerspectiveCamera, useProgress } from '@react-three/drei'
 import Eight from "@/components/animata/bento-grid/eight"
-import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { useLoader } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useRef, useMemo, useState, useEffect, Suspense } from 'react'
@@ -11,90 +10,8 @@ import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLigh
 import usePlayerStore from '@/store/usePlayerStore'
 import LoadingScreen from '@/components/LoadingScreen'
 
-// Komponente, die für `ms` Millisekunden suspended
-function SuspenseDelay({ ms }: { ms: number }) {
-  const promiseRef = useRef<Promise<void> | null>(null)
-  if (!promiseRef.current) {
-    promiseRef.current = new Promise(resolve => {
-      setTimeout(resolve, ms)
-    })
-    throw promiseRef.current
-  }
-  return null
-}
-/* ---------- Speed Controls UI for adjusting movement and animation speeds ---------------- */
-function SpeedControls() {
-  const { movementSpeed, setMovementSpeed, animationSpeed, setAnimationSpeed } = usePlayerStore()
 
-  // Style for the controls panel
-  const panelStyle: React.CSSProperties = {
-    position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    padding: '15px',
-    borderRadius: '8px',
-    color: 'white',
-    zIndex: 1000,
-    width: '250px',
-    fontFamily: 'Arial, sans-serif',
-  }
 
-  const sliderContainerStyle: React.CSSProperties = {
-    marginBottom: '15px',
-  }
-
-  const labelStyle: React.CSSProperties = {
-    display: 'block',
-    marginBottom: '5px',
-    fontSize: '14px',
-  }
-
-  const sliderStyle: React.CSSProperties = {
-    width: '100%',
-    backgroundColor: 'transparent',
-  }
-
-  const valueStyle: React.CSSProperties = {
-    fontSize: '12px',
-    color: '#aaa',
-    marginTop: '5px',
-  }
-
-  return (
-    <div style={panelStyle}>
-      <h3 style={{ margin: '0 0 15px 0', fontSize: '16px' }}>Character Controls</h3>
-
-      <div style={sliderContainerStyle}>
-        <label style={labelStyle}>Movement Speed</label>
-        <input
-          type="range"
-          min="1"
-          max="10"
-          step="0.1"
-          value={movementSpeed}
-          onChange={(e) => setMovementSpeed(parseFloat(e.target.value))}
-          style={sliderStyle}
-        />
-        <div style={valueStyle}>Value: {movementSpeed.toFixed(1)}</div>
-      </div>
-
-      <div style={sliderContainerStyle}>
-        <label style={labelStyle}>Animation Speed (ms)</label>
-        <input
-          type="range"
-          min="50"
-          max="250"
-          step="5"
-          value={animationSpeed}
-          onChange={(e) => setAnimationSpeed(parseInt(e.target.value))}
-          style={sliderStyle}
-        />
-        <div style={valueStyle}>Value: {animationSpeed}ms (lower = faster)</div>
-      </div>
-    </div>
-  )
-}
 
 /* ---------- Dev Mode UI for editing camera path points ---------------- */
 function DevModeUI() {
@@ -560,7 +477,7 @@ export function Room({ wallTextures = [null, null, null, null, null] }: RoomProp
       bumpMap={glassBump}       // deine Bump-Map
       bumpScale={0.1}          // Stärke der Unebenheiten
     />
-  ), [glassDiffuse, glassBump])
+  ), [glassBump])
 
   const createWallMat = (idx: number) => (
     <meshStandardMaterial
@@ -629,7 +546,7 @@ export function Person({ idx }: PersonProps) {
   const [loadingError, setLoadingError] = useState(false)
 
   // Error handler for texture loading
-  const onError = (error: any) => {
+  const onError = (error: Error | string) => {
     console.error('Failed to load texture:', error)
     setLoadingError(true)
   }
@@ -667,37 +584,52 @@ export function Person({ idx }: PersonProps) {
     onError
   )
 
-  // Load walk animation frames
-  const walkFrontTextures = []
-  const walkBackTextures = []
-  const walkSideTextures = []
+  // Load walk animation frames - load each texture individually to avoid hooks in loops
+  const walkFront1 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_1.png`, undefined, onError)
+  const walkFront2 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_2.png`, undefined, onError)
+  const walkFront3 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_3.png`, undefined, onError)
+  const walkFront4 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_4.png`, undefined, onError)
+  const walkFront5 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_5.png`, undefined, onError)
+  const walkFront6 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_6.png`, undefined, onError)
+  const walkFront7 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_7.png`, undefined, onError)
+  const walkFront8 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_front_8.png`, undefined, onError)
 
-  for (let i = 1; i <= 8; i++) {
-    walkFrontTextures.push(
-      useLoader(
-        THREE.TextureLoader,
-        `character-${idx}\\walk\\walk_front_${i}.png`,
-        undefined,
-        onError
-      )
-    )
-    walkBackTextures.push(
-      useLoader(
-        THREE.TextureLoader,
-        `character-${idx}\\walk\\walk_back_${i}.png`,
-        undefined,
-        onError
-      )
-    )
-    walkSideTextures.push(
-      useLoader(
-        THREE.TextureLoader,
-        `character-${idx}\\walk\\walk_side_${i}.png`,
-        undefined,
-        onError
-      )
-    )
-  }
+  const walkBack1 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_1.png`, undefined, onError)
+  const walkBack2 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_2.png`, undefined, onError)
+  const walkBack3 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_3.png`, undefined, onError)
+  const walkBack4 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_4.png`, undefined, onError)
+  const walkBack5 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_5.png`, undefined, onError)
+  const walkBack6 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_6.png`, undefined, onError)
+  const walkBack7 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_7.png`, undefined, onError)
+  const walkBack8 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_back_8.png`, undefined, onError)
+
+  const walkSide1 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_1.png`, undefined, onError)
+  const walkSide2 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_2.png`, undefined, onError)
+  const walkSide3 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_3.png`, undefined, onError)
+  const walkSide4 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_4.png`, undefined, onError)
+  const walkSide5 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_5.png`, undefined, onError)
+  const walkSide6 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_6.png`, undefined, onError)
+  const walkSide7 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_7.png`, undefined, onError)
+  const walkSide8 = useLoader(THREE.TextureLoader, `character-${idx}\\walk\\walk_side_8.png`, undefined, onError)
+
+  // Create the texture arrays using useMemo
+  const walkFrontTextures = useMemo(() => [
+    walkFront1, walkFront2, walkFront3, walkFront4,
+    walkFront5, walkFront6, walkFront7, walkFront8
+  ], [walkFront1, walkFront2, walkFront3, walkFront4,
+      walkFront5, walkFront6, walkFront7, walkFront8])
+
+  const walkBackTextures = useMemo(() => [
+    walkBack1, walkBack2, walkBack3, walkBack4,
+    walkBack5, walkBack6, walkBack7, walkBack8
+  ], [walkBack1, walkBack2, walkBack3, walkBack4,
+      walkBack5, walkBack6, walkBack7, walkBack8])
+
+  const walkSideTextures = useMemo(() => [
+    walkSide1, walkSide2, walkSide3, walkSide4,
+    walkSide5, walkSide6, walkSide7, walkSide8
+  ], [walkSide1, walkSide2, walkSide3, walkSide4,
+      walkSide5, walkSide6, walkSide7, walkSide8])
 
   // Organize textures
   const textures = useMemo(() => {
@@ -772,7 +704,7 @@ export function Person({ idx }: PersonProps) {
         cameraPos.z - characterPos.z
       ).normalize()
 
-      const cameraAngle = Math.atan2(directionToCamera.x, directionToCamera.z)
+      const _cameraAngle = Math.atan2(directionToCamera.x, directionToCamera.z)
 
       // Determine visual direction based on movement and camera angle
       if (moveDir.z !== 0 || moveDir.x !== 0) {
@@ -1005,10 +937,10 @@ function RailCam() {
 /* ---------- Main Scene -------------------- */
 function RoomScene() {
   const { scene } = useThree()
-  const [currentProjection, setCurrentProjection] = useState('/favicon.svg') // Default SVG
+  const [currentProjection, _setCurrentProjection] = useState('/favicon.svg') // Default SVG
 
   // Wall textures - SVG for each wall (floor, front, back, left, right)
-  const [wallTextures, setWallTextures] = useState([
+  const [wallTextures, _setWallTextures] = useState([
     '/text.svg', // Floor
     '/text.svg', // Front wall
     '/text.svg', // Back wall
@@ -1038,7 +970,7 @@ function RoomScene() {
 
 /* ---------- Loading Component --------------------------------- */
 function LoadingComponent() {
-  const { progress, active } = useProgress()
+  const { progress, active: _active } = useProgress()
   return (
     <div style={{
       position: 'absolute',

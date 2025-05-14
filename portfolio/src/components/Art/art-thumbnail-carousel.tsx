@@ -18,6 +18,20 @@ export default function ArtThumbnailCarousel({ images, title }: ArtThumbnailCaro
   const [isHovering, setIsHovering] = useState(false)
   const [autoplayEnabled, setAutoplayEnabled] = useState(false)
 
+  // Autoplay starten/stoppen bei Hover
+  useEffect(() => {
+    // Only run the effect if we have multiple images and autoplay is enabled
+    if (images.length > 1 && autoplayEnabled) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
+      }, 2000)
+
+      return () => {
+        clearInterval(interval)
+      }
+    }
+  }, [autoplayEnabled, images.length])
+
   // Hilfsfunktion, um die URL aus einem Bild zu extrahieren
   const getImageUrl = (image: string | { url: string; alt?: string }): string => {
     return typeof image === 'string' ? image : image.url
@@ -54,21 +68,6 @@ export default function ArtThumbnailCarousel({ images, title }: ArtThumbnailCaro
       </div>
     )
   }
-
-  // Autoplay starten/stoppen bei Hover
-  useEffect(() => {
-    let interval: NodeJS.Timeout | null = null
-
-    if (autoplayEnabled) {
-      interval = setInterval(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
-      }, 2000)
-    }
-
-    return () => {
-      if (interval) clearInterval(interval)
-    }
-  }, [autoplayEnabled, images.length])
 
   const nextSlide = (e: React.MouseEvent) => {
     e.preventDefault()

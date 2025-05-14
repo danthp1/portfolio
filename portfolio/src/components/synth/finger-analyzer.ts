@@ -45,9 +45,9 @@ export class FingerAnalyzer {
   }
 
   // Set the musical key and scale
-  setMusicParameters(key: string, scale: string, normalizeToChords = true) {
+  setMusicParameters(key: string, scale: string, _normalizeToChords = true) {
     this.musicTheory.setKey(key)
-    this.musicTheory.setScale(scale as any)
+    this.musicTheory.setScale(scale as 'major' | 'minor' | 'pentatonic' | 'blues' | 'chromatic')
   }
 
   // Analyze hand landmarks to extract finger information

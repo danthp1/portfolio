@@ -6,7 +6,7 @@ import { getPayload } from 'payload'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 import RichText from '@/components/RichText'
-import { Media } from '@/components/Media'
+import { Media as _Media } from '@/components/Media'
 import RelatedExperience from '@/components/RelatedExperience'
 
 import { PostHero } from '@/heros/PostHero'
