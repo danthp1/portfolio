@@ -33,7 +33,8 @@ const nextConfig = {
   images: {
     // Statische Domains
     domains: [
-      'hebbkx1anhila5yf.public.blob.vercel-storage.com',
+     'www.sktchbk.de',
+  'hebbkx1anhila5yf.public.blob.vercel-storage.com',
     ],
     // Dynamische Remote-Patterns aus der SERVER_URL
     remotePatterns: [
