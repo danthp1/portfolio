@@ -19,11 +19,10 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
 
-  // 2) TypeScript-Fehler beim Build ignorieren
+  // TypeScript-Fehler beim Build ignorieren
   typescript: {
     ignoreBuildErrors: true,
   },
-
 
   // Für Next 13 / React Server Components:
   experimental: {
@@ -31,12 +30,10 @@ const nextConfig = {
   },
 
   images: {
-    // Statische Domains
     domains: [
-     'www.sktchbk.de',
-  'hebbkx1anhila5yf.public.blob.vercel-storage.com',
+      'www.sktchbk.de',
+      'hebbkx1anhila5yf.public.blob.vercel-storage.com',
     ],
-    // Dynamische Remote-Patterns aus der SERVER_URL
     remotePatterns: [
       {
         protocol: new URL(SERVER_URL).protocol.replace(':', ''),
@@ -45,23 +42,30 @@ const nextConfig = {
     ],
   },
 
-  // Configuration for PDF.js worker
+  // PDF.js worker–Support
   webpack: (config) => {
-    // Add support for PDF.js worker
-    config.resolve.alias.canvas = false;
-    config.resolve.alias.encoding = false;
-
-    // Add support for importing PDF files
+    config.resolve.alias.canvas = false
+    config.resolve.alias.encoding = false
     config.module.rules.push({
       test: /\.(pdf)$/i,
       type: 'asset/resource',
-    });
-
-    return config;
+    })
+    return config
   },
 
-  // Deine Redirect-Rules
+  // Redirects aus deiner redirects.js
   redirects,
+
+  // Hier fügst du die rewrites ein:
+  async rewrites() {
+    return [
+      {
+        // Alle Anfragen an /api/media/... leiten wir auf /media/... um
+        source: '/api/media/:path*',
+        destination: '/media/:path*',
+      },
+    ]
+  },
 }
 
 // Wrappe dein Next-Config mit Payload
