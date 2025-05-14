@@ -1,6 +1,6 @@
 import { Suspense } from "react"
-import ArtGallery from "@/components/art/art-gallery"
-import ArtGalleryFilter from "@/components/art/art-gallery-filter"
+import ArtGallery from "@/components/Art/art-gallery"
+import ArtGalleryFilter from "@/components/Art/art-gallery-filter"
 import { Skeleton } from "@/components/ui/skeleton"
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'

@@ -260,7 +260,7 @@ export class VisualizationEngine {
   }
 
   // Draw sine wave visualizations
-  private drawSineWaves(ctx: CanvasRenderingContext2D, energyLevel: number, colors: any) {
+  private drawSineWaves(ctx: CanvasRenderingContext2D, energyLevel: number, colors: { primary: string; secondary: string; tertiary: string }) {
     const width = this.canvas.width
     const height = this.canvas.height
 

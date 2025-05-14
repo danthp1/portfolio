@@ -21,9 +21,14 @@ interface ShaderProgramInfo {
   }
 }
 
+// Extended WebGLBuffer with additional properties
+interface ExtendedWebGLBuffer extends WebGLBuffer {
+  bufferData?: Float32Array;
+}
+
 interface BufferObjects {
-  position: WebGLBuffer
-  color?: WebGLBuffer
+  position: ExtendedWebGLBuffer
+  color?: ExtendedWebGLBuffer
   indices?: WebGLBuffer
   textureCoord?: WebGLBuffer
 }
@@ -474,7 +479,7 @@ export class WebGLVisualizationEngine {
       gl.drawElements(gl.TRIANGLES, numIndices, gl.UNSIGNED_SHORT, 0)
     } else {
       // Fallback to drawing points if indices are not available
-      const numPoints = (buffers.position as any).bufferData ? (buffers.position as any).bufferData.length / 3 : 1024
+      const numPoints = buffers.position.bufferData ? buffers.position.bufferData.length / 3 : 1024
       gl.drawArrays(gl.POINTS, 0, numPoints)
     }
 
@@ -528,7 +533,7 @@ export class WebGLVisualizationEngine {
     }
 
     // Get the correct number of points to draw
-    const numPoints = (buffers.position as any).bufferData ? (buffers.position as any).bufferData.length / 3 : 2000 // Fallback to default count
+    const numPoints = buffers.position.bufferData ? buffers.position.bufferData.length / 3 : 2000 // Fallback to default count
 
     gl.drawArrays(gl.POINTS, 0, numPoints)
     gl.disable(gl.BLEND)
