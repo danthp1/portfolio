@@ -3,12 +3,16 @@ import { motion } from "framer-motion"
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { ScrollControls, Scroll, PerspectiveCamera, useProgress } from '@react-three/drei'
 import Eight from "@/components/animata/bento-grid/eight"
+import { Features } from "@/components/animata/feature/feature-10"
+import Feature89 from "@/components/animata/calltoaction/call-to-action"
 import { useLoader } from '@react-three/fiber'
 import * as THREE from 'three'
-import { useRef, useMemo, useState, useEffect, Suspense } from 'react'
+import React, { useRef, useMemo, useState, useEffect, Suspense } from 'react'
 import { RectAreaLightUniformsLib } from 'three/examples/jsm/lights/RectAreaLightUniformsLib'
 import usePlayerStore from '@/store/usePlayerStore'
 import LoadingScreen from '@/components/LoadingScreen'
+import {Github, Hexagon, Twitter} from "lucide-react";
+import {Footer} from "@/Footer/Component";
 
 
 
@@ -880,16 +884,65 @@ function RailCam() {
   const autoc = useRef(false)
   // Get camera path points from store
   const cameraPathPoints = usePlayerStore(state => state.cameraPathPoints)
+  // Add a manual scroll position ref to control with arrow keys and wheel
+  const manualScrollY = useRef(0)
 
   useEffect(() => {
-    const h = () => {
+    // Handle scroll events
+    const handleScroll = (e) => {
+      // Note: We don't prevent default for scroll events as it's not reliable in all browsers
+      // and we want the scrollbar to work normally
+
+      // Update velocity and last Y position
       const y = window.scrollY
       vel.current = y - lastY.current
       lastY.current = y
+
+      // Reset manualScrollY to ensure we use the standard scrollbar
+      manualScrollY.current = 0
     }
-    window.addEventListener('scroll',h)
-    return ()=>window.removeEventListener('scroll',h)
-  },[])
+
+    // Handle wheel events
+    const handleWheel = (e) => {
+      e.preventDefault()    // passive: false vorausgesetzt
+      // die eigentliche Seiten–Bewegung:
+      window.scrollBy({ top: e.deltaY, behavior: 'auto' })
+
+      // für Smoothness weiter die Velocity setzen
+      vel.current = e.deltaY * 0.1
+    }
+
+    window.addEventListener('wheel', handleWheel, { passive: false })
+    return () => window.removeEventListener('wheel', handleWheel)
+
+    // -- Keydown-Handler für ↑/↓ --
+    const handleKeyDown = (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        const amount = 100 // px pro Tastendruck, anpassen nach Geschmack
+        window.scrollBy({
+          top: e.key === 'ArrowDown' ? amount : -amount,
+          behavior: 'auto'
+        })
+      }
+      // Links/Rechts weiter, wie gehabt…
+    }
+
+
+    // Add event listeners
+    // Using passive: true for wheel events since we're not preventing default
+    // This improves scrolling performance
+    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('wheel', handleWheel)
+    window.addEventListener('keydown', handleKeyDown)
+
+    // Remove event listeners on cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('wheel', handleWheel)
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [size.height])
 
   // Convert the points from the store to THREE.Vector3 objects
   const curve = useMemo(() => new THREE.CatmullRomCurve3(
@@ -899,7 +952,11 @@ function RailCam() {
   useFrame(()=>{
     const vh = size.height
     const total = vh*4 // Increased to match our 5 pages in ScrollControls
-    const t = Math.min(window.scrollY/total,1)
+
+    // Always use window.scrollY for scrolling to ensure standard scrollbar functionality
+    // This ensures we use the standard scrollbar for wheel events and up/down arrow keys
+    const scrollPosition = window.scrollY
+    const t = Math.min(scrollPosition/total,1)
     const smooth = Math.min(0.1+Math.abs(vel.current)*0.0003,0.2)
     const p = curve.getPointAt(t)
     camera.position.lerp(p,smooth)
@@ -923,10 +980,15 @@ function RailCam() {
     if (t>=0.95) {
       cont.style.backgroundColor = '#000'
       cont.style.opacity = '1'
-      if (!autoc.current) { autoc.current = true; window.scrollTo({ top: total+10, behavior: 'smooth' }) }
+      if (!autoc.current) {
+        autoc.current = true;
+        // Update window scroll
+        window.scrollTo({ top: total+10, behavior: 'smooth' })
+      }
     } else if (autoc.current) {
       autoc.current = false
       cont.style.backgroundColor = ''
+      // Update window scroll
       window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   })
@@ -988,8 +1050,27 @@ function LoadingComponent() {
 /* ---------- Page Component --------------------------------- */
 export default function Page() {
   const [mounted, setMounted] = useState(false)
+  const [roomLoaded, setRoomLoaded] = useState(false)
   const { devMode, setDevMode } = usePlayerStore()
-  useEffect(() => { setMounted(true); return () => setMounted(false) }, [])
+  const { progress } = useProgress()
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false)
+  }, [])
+
+  // Track when the loading is complete
+  useEffect(() => {
+    if (progress >= 100) {
+      // Add a small delay to ensure the room is fully rendered
+      const timer = setTimeout(() => {
+        setRoomLoaded(true)
+      }, 2500) // Slightly longer than the buffer in LoadingScreen
+
+      return () => clearTimeout(timer)
+    }
+  }, [progress])
+
   // Dein Lorem-Ipsum-Text
   const lines = [
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
@@ -1012,85 +1093,59 @@ export default function Page() {
 
   return (
     <>
-      {/* Sidebar mit endlosem, vertikal scrollendem Text */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "20rem",
-          height: "100vh",
-          overflow: "hidden",
-          zIndex: 15,
-        }}
-      >
-        <motion.div
+      {/* Sidebar mit endlosem, vertikal scrollendem Text - nur anzeigen, wenn der Raum geladen ist */}
+      {roomLoaded && (
+        <div
           style={{
-            display: "flex",
-            flexDirection: "column",
-            writingMode: "vertical-rl",
-            textOrientation: "upright",
-            fontSize: 18,
-            fontFamily: "sans-serif",
-            lineHeight: 1.5,
-          }}
-          animate={{ y: ["0%", "-50%"] }}
-          transition={{
-            duration: 10,
-            ease: "linear",
-            repeat: Infinity,
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "20rem",
+            height: "100vh",
+            overflow: "hidden",
+            zIndex: 15,
           }}
         >
-          {/** wir rendern den Block zweimal **/}
-          {[0, 1].map(rep => (
-            <div key={rep}>
-              {lines.map((txt, i) => (
-                <p key={i} style={{ margin: 0, padding: "0.5rem 0" }}>
-                  {txt}
-                </p>
-              ))}
-            </div>
-          ))}
-        </motion.div>
-      </div>
+          <motion.div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              writingMode: "vertical-rl",
+              textOrientation: "upright",
+              fontSize: 18,
+              color: "#386bff",
+              fontFamily: "sans-serif",
+              lineHeight: 1.5,
+            }}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              y: ["0%", "-50%"]
+            }}
+            transition={{
+              opacity: { duration: 0.5, delay: 0.2 },
+              y: {
+                duration: 10,
+                ease: "linear",
+                repeat: Infinity,
+              }
+            }}
+          >
+            {/** wir rendern den Block zweimal **/}
+            {[0, 1].map(rep => (
+              <div key={rep}>
+                {lines.map((txt, i) => (
+                  <p key={i} className={"font-bold"} style={{ margin: 0, padding: "0.5rem 0" }}>
+                    {txt}
+                  </p>
+                ))}
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      )}
 
-      {/* Dev Mode Toggle Button */}
-      <div
-        style={{
-          position: "fixed",
-          top: "20px",
-          left: "20px",
-          zIndex: 1000,
-        }}
-      >
-        <button
-          onClick={() => setDevMode(!devMode)}
-          style={{
-            backgroundColor: devMode ? "#4CAF50" : "#555",
-            color: "white",
-            border: "none",
-            padding: "8px 16px",
-            borderRadius: "4px",
-            cursor: "pointer",
-            fontFamily: "Arial, sans-serif",
-            fontSize: "14px",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ marginRight: "8px" }}>Dev Mode</span>
-          <span style={{
-            width: "12px",
-            height: "12px",
-            borderRadius: "50%",
-            backgroundColor: devMode ? "#8F8" : "#555",
-            border: "1px solid #FFF"
-          }}></span>
-        </button>
-      </div>
 
-      {/* Dev Mode UI */}
-      <DevModeUI />
 
       <div id="canvas-container">
         <Suspense fallback={<LoadingComponent />} >
@@ -1108,9 +1163,40 @@ export default function Page() {
           </Canvas>
         </Suspense>
       </div>
-      <div style={{ height: '500vh' }} />
-      <div style={{ position: 'relative', zIndex:20, background:'#fff', padding:40, minHeight:'300vh', width: '100%' }}>
-        <Eight />
+      <div style={{ height: '450vh' }} />
+      <div className={"px-40"} style={{ position: 'relative', zIndex:20, background:'#fff', minHeight:'300vh', width: '100%' }}>
+        <Features />
+        <Feature89 />
+        <Footer
+          logo={<Hexagon className="h-10 w-10" />}
+          brandName="Awesome Corp"
+          socialLinks={[
+            {
+              icon: <Twitter className="h-5 w-5" />,
+              href: "https://twitter.com",
+              label: "Twitter",
+            },
+            {
+              icon: <Github className="h-5 w-5" />,
+              href: "https://github.com",
+              label: "GitHub",
+            },
+          ]}
+          mainLinks={[
+            { href: "/products", label: "Products" },
+            { href: "/about", label: "About" },
+            { href: "/blog", label: "Blog" },
+            { href: "/contact", label: "Contact" },
+          ]}
+          legalLinks={[
+            { href: "/privacy", label: "Privacy" },
+            { href: "/terms", label: "Terms" },
+          ]}
+          copyright={{
+            text: "© 2024 Awesome Corp",
+            license: "All rights reserved",
+          }}
+        />
       </div>
     </>
   )

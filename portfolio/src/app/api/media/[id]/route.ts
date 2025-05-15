@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config';
-import path from 'path';
-import fs from 'fs';
+import { get } from '@vercel/blob';
 
 export async function GET(
   request: NextRequest,
@@ -26,39 +25,43 @@ export async function GET(
       return new NextResponse('Media not found', { status: 404 });
     }
 
-    // Get the file path
-    const staticDir = path.resolve(process.cwd(), 'public/media');
-    const filePath = path.join(staticDir, media.filename);
+    // Get the URL from the media document
+    const url = media.url;
 
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      return new NextResponse('File not found', { status: 404 });
+    if (!url) {
+      return new NextResponse('Media URL not found', { status: 404 });
     }
 
-    // Read the file
-    const fileBuffer = fs.readFileSync(filePath);
+    // Fetch the blob from Vercel Blob Storage
+    const blob = await get(url);
 
-    // Set appropriate headers
+    if (!blob) {
+      return new NextResponse('Blob not found', { status: 404 });
+    }
+
+    // Set appropriate headers for the response
     const headers = new Headers();
-    headers.set('Content-Type', media.mimeType);
-
-    // Set Content-Disposition header based on download parameter
-    if (download) {
-      headers.set('Content-Disposition', `attachment; filename="${media.filename}"`);
-    } else {
-      headers.set('Content-Disposition', `inline; filename="${media.filename}"`);
-    }
 
     // Set CORS headers
     headers.set('Access-Control-Allow-Origin', '*');
     headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
     headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    // Return the file
-    return new NextResponse(fileBuffer, {
-      headers,
-      status: 200,
-    });
+    // Handle based on download parameter
+    if (download) {
+      // For downloads, redirect with the download parameter
+      const downloadUrl = `${blob.url}?download=true`;
+      return NextResponse.redirect(downloadUrl, {
+        headers,
+        status: 302
+      });
+    } else {
+      // For inline viewing, just redirect to the blob URL
+      return NextResponse.redirect(blob.url, {
+        headers,
+        status: 302
+      });
+    }
   } catch (error) {
     console.error('Error serving media file:', error);
     return new NextResponse('Internal Server Error', { status: 500 });

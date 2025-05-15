@@ -82,7 +82,7 @@ export default async function ScientificWork({ params: paramsPromise }: Args) {
                   <div className="pdf-container min-h-[600px]">
                     {/* We'll use client-side component for the PDF viewer */}
                     <PDFViewerClient
-                      pdfUrl={`/api/media/${scientificWork.pdfFile.id}`}
+                      pdfUrl={scientificWork.pdfFile.url}
                     />
                   </div>
                 )}

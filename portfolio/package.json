@@ -32,7 +32,7 @@
     "@payloadcms/plugin-search": "3.33.0",
     "@payloadcms/plugin-seo": "3.33.0",
     "@payloadcms/richtext-lexical": "3.33.0",
-    "@payloadcms/storage-vercel-blob": "^3.37.0",
+    "@payloadcms/storage-vercel-blob": "3.33.0",
     "@payloadcms/ui": "3.33.0",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
@@ -69,6 +69,7 @@
     "@tensorflow/tfjs-converter": "latest",
     "@tensorflow/tfjs-core": "latest",
     "@types/three": "^0.176.0",
+    "@vercel/blob": "^1.0.1",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -120,7 +121,7 @@
     "typescript": "5.7.3"
   },
   "engines": {
-    "node": "^18.20.2 || >=20.9.0",
+    "node": "22.15.1",
     "pnpm": "^9 || ^10"
   },
   "pnpm": {

@@ -1,50 +1,80 @@
-"use client"
+'use client'
 
 import React from 'react'
+import { TextShimmer } from "@/components/animata/text-shimmer";
+import { SpiralAnimation } from "@/components/animata/spiral"
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 
 interface LoadingScreenProps {
   progress?: number;
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ progress = 0 }) => {
+  const [startVisible, setStartVisible] = useState(false)
+  const [loadingComplete, setLoadingComplete] = useState(false)
+  const [actualLoadingComplete, setActualLoadingComplete] = useState(false)
+
+  // Fade in the text after animation loads
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setStartVisible(true)
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Track when actual loading reaches 100%
+  useEffect(() => {
+    if (progress >= 100 && !actualLoadingComplete) {
+      setActualLoadingComplete(true)
+    }
+  }, [progress, actualLoadingComplete])
+
+  // Add a 2-second buffer after actual loading is complete
+  useEffect(() => {
+    if (actualLoadingComplete) {
+      // Add a 2-second buffer before starting the fade-out animation
+      // This ensures the loading screen stays visible for 2 seconds longer
+      // than the actual loading time
+      const bufferTimer = setTimeout(() => {
+        setLoadingComplete(true)
+      }, 2000)
+
+      return () => clearTimeout(bufferTimer)
+    }
+  }, [actualLoadingComplete])
+
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#0047ab',
-      color: 'white',
-      fontFamily: 'Satoshi, Arial, sans-serif'
-    }}>
-      <h1 style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Museum wird geladen...</h1>
-      <div style={{
-        width: '80%',
-        maxWidth: '500px',
-        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-        borderRadius: '10px',
-        overflow: 'hidden',
-        boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
-        marginBottom: '2rem'
-      }}>
-        <div style={{
-          width: `${progress}%`,
-          height: '20px',
-          backgroundColor: '#66b3ff',
-          borderRadius: '10px',
-          transition: 'width 0.3s ease-in-out',
-          boxShadow: '0 0 10px rgba(102, 179, 255, 0.7)'
-        }} />
+    <motion.div
+      className="fixed inset-0 w-full h-full overflow-hidden bg-white"
+      animate={{
+        opacity: loadingComplete ? 0 : 1,
+        backgroundColor: "white" // Ensure background stays white during fade-out
+      }}
+      transition={{ duration: 1, ease: "easeInOut" }}
+    >
+      {/* Spiral Animation */}
+      <div className="absolute inset-0">
+        <SpiralAnimation />
       </div>
-      <p style={{ fontSize: '1.2rem' }}>{progress}% abgeschlossen</p>
-      <div style={{ marginTop: '3rem', textAlign: 'center' }}>
-        <p>Bereite dich auf ein einzigartiges Museumserlebnis vor...</p>
-        <p>Entdecke Kunstwerke und finde deine große Liebe!</p>
+
+      {/* Text Shimmer Effect */}
+      <div
+        className={`
+          absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10
+          transition-all duration-1500 ease-out
+          ${startVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
+        `}
+      >
+        <div className="text-black text-2xl tracking-[0.2em] uppercase font-extralight">
+          <TextShimmer duration={3} spread={4}>
+            {progress >= 100 ? "Willkommen" : `Loading ${Math.min(Math.round(progress), 99)}%`}
+          </TextShimmer>
+        </div>
       </div>
-    </div>
-  );
-};
+    </motion.div>
+  )
+}
 
 export default LoadingScreen;

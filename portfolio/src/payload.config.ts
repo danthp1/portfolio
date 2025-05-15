@@ -32,6 +32,8 @@ export default buildConfig({
       // The `BeforeDashboard` component renders the 'welcome' block that you see after logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below and the import `BeforeDashboard` statement on line 15.
       beforeDashboard: ['@/components/BeforeDashboard'],
+      // Add UploadHandlersProvider to the providers array
+      providers: ['@payloadcms/ui#UploadHandlersProvider'],
     },
     importMap: {
       baseDir: path.resolve(dirname),
@@ -74,10 +76,9 @@ export default buildConfig({
     ...plugins,
     vercelBlobStorage({
       collections: {
-        'media': {
-          adapter: 'vercel-blob',
-        },
+        [Media.slug]: true,
       },
+      token: process.env.BLOB_READ_WRITE_TOKEN || '',
     }),
   ],
   secret: process.env.PAYLOAD_SECRET,
